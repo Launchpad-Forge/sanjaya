@@ -18,8 +18,8 @@ button, a, input { -webkit-tap-highlight-color: transparent; }
 .site-brand { display: inline-flex; align-items: center; gap: 10px; color: inherit; font-size: 25px; font-weight: 600; letter-spacing: -1.2px; }
 .site-brand > svg { width: 30px; height: 32px; }
 .brand-period { color: #b9edcf; }
-.site-header { position: fixed; inset: 0 0 auto; z-index: 50; color: #f4f2fa; border-bottom: 1px solid #ffffff14; transition: background .2s; }
-.site-header.is-scrolled { background: #100e1cf2; backdrop-filter: blur(18px); }
+.site-header { position: fixed; inset: 0 0 auto; z-index: 50; color: #f4f2fa; border-bottom: 1px solid #ffffff14; background: #100e1cf2; backdrop-filter: blur(18px); transition: background .2s, border-color .2s; }
+.site-header.is-scrolled { border-bottom-color: #ffffff26; }
 .site-nav { display: flex; justify-content: space-between; align-items: center; height: 86px; max-width: 1320px; padding: 0 40px; margin: auto; gap: 30px; }
 .desktop-links, .desktop-actions { display: flex; align-items: center; gap: 28px; font-size: 13px; }
 .desktop-links { color: #d4d0e1; }

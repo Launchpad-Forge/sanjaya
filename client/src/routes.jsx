@@ -16,6 +16,7 @@ import Home from './pages/app/Home';
 import LiveNew from './pages/app/LiveNew';
 import LiveView from './pages/app/LiveView';
 import Capture from './pages/app/Capture';
+import Profile from './pages/app/Profile';
 
 // Layouts
 import AppLayout from './components/layout/AppLayout';
@@ -47,6 +48,7 @@ export default function AppRoutes() {
         <Route path="/home" element={<Home />} />
         <Route path="/live/new" element={<LiveNew />} />
         <Route path="/live/:sessionId" element={<LiveView />} />
+        <Route path="/profile" element={<Profile />} />
       </Route>
       
       {/* 404 */}
