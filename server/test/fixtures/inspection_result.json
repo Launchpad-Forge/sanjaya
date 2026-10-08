@@ -1,0 +1,475 @@
+{
+ "format": "sanjaya.inspection/0.1",
+ "status": "ok",
+ "unit": "m",
+ "baseline": {
+  "id": "11111111-1111-4111-8111-111111111111",
+  "created_utc": "2026-10-08T13:00:13Z",
+  "metric": true,
+  "scale": {
+   "scale": 1.0,
+   "spread": 0.1,
+   "pixels": 10000
+  },
+  "objects": 2
+ },
+ "current": {
+  "id": "22222222-2222-4222-8222-222222222222",
+  "created_utc": "2026-10-08T13:00:13Z",
+  "metric": true,
+  "scale": {
+   "scale": 1.0,
+   "spread": 0.1,
+   "pixels": 10000
+  },
+  "objects": 2
+ },
+ "alignment": {
+  "method": "shared_start+icp",
+  "matrix_current_to_baseline": [
+   [
+    0.9486,
+    0.00226,
+    -0.08254,
+    -0.1834
+   ],
+   [
+    -0.00237,
+    0.95218,
+    -0.00107,
+    -0.00774
+   ],
+   [
+    0.08254,
+    0.00128,
+    0.9486,
+    -0.11217
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "relative_scale": 0.9522,
+  "fitness": 0.934,
+  "rmse": 0.024,
+  "confidence": 0.934,
+  "anchor": null,
+  "metres_per_unit": 1.0,
+  "relative_scale_uncertainty": 0.05
+ },
+ "changes": [
+  {
+   "type": "object_disappeared",
+   "label": "fire extinguisher",
+   "baseline_position": [
+    -2.0,
+    -1.1,
+    -3.5
+   ],
+   "current_position": null,
+   "displacement_m": null,
+   "displacement_range_m": null,
+   "uncertainty_m": 0.043,
+   "region": null,
+   "evidence": [
+    {
+     "scan": "baseline",
+     "kind": "keyframe",
+     "image": "keyframes/kf_000.jpg",
+     "box": [
+      10.0,
+      10.0,
+      40.0,
+      40.0
+     ],
+     "pixel": null,
+     "note": "detected as fire extinguisher, score 0.60"
+    },
+    {
+     "scan": "current",
+     "kind": "keyframe",
+     "image": "keyframes/kf_000.jpg",
+     "box": null,
+     "pixel": [
+      12.0,
+      65.4
+     ],
+     "note": "current scan looked here and saw empty space"
+    },
+    {
+     "scan": "current",
+     "kind": "keyframe",
+     "image": "keyframes/kf_001.jpg",
+     "box": null,
+     "pixel": [
+      36.2,
+      63.7
+     ],
+     "note": "current scan looked here and saw empty space"
+    },
+    {
+     "scan": "current",
+     "kind": "keyframe",
+     "image": "keyframes/kf_004.jpg",
+     "box": null,
+     "pixel": [
+      53.9,
+      73.7
+     ],
+     "note": "current scan looked here and saw empty space"
+    }
+   ],
+   "support": {
+    "free_space_views": 3,
+    "surface_views": 0,
+    "occluded_views": 0,
+    "detection": 0.936,
+    "views": 3,
+    "alignment": 0.934,
+    "geometry_regions": [
+     {
+      "type": "geometry_removed",
+      "volume_m3": 0.043,
+      "voxels": 43
+     }
+    ]
+   },
+   "confidence": 0.765,
+   "severity": "high",
+   "id": "chg_000",
+   "baseline_session": "11111111-1111-4111-8111-111111111111",
+   "current_session": "22222222-2222-4222-8222-222222222222",
+   "baseline_time": "2026-10-08T13:00:13Z",
+   "current_time": "2026-10-08T13:00:13Z"
+  },
+  {
+   "type": "object_moved",
+   "label": "chair",
+   "baseline_position": [
+    1.0,
+    -1.15,
+    -3.0
+   ],
+   "current_position": [
+    0.994,
+    -1.158,
+    -2.203
+   ],
+   "displacement_m": 0.8,
+   "displacement_range_m": [
+    0.76,
+    0.84
+   ],
+   "uncertainty_m": 0.105,
+   "region": null,
+   "evidence": [
+    {
+     "scan": "baseline",
+     "kind": "keyframe",
+     "image": "keyframes/kf_000.jpg",
+     "box": [
+      10.0,
+      10.0,
+      40.0,
+      40.0
+     ],
+     "pixel": null,
+     "note": "detected as chair, score 0.60"
+    },
+    {
+     "scan": "current",
+     "kind": "keyframe",
+     "image": "keyframes/kf_000.jpg",
+     "box": [
+      10.0,
+      10.0,
+      40.0,
+      40.0
+     ],
+     "pixel": null,
+     "note": "detected as chair, score 0.60"
+    }
+   ],
+   "support": {
+    "sigma_ratio": 7.61,
+    "geometric": 0.96,
+    "baseline_detection": 0.936,
+    "current_detection": 0.936,
+    "baseline_views": 3,
+    "current_views": 3,
+    "alignment": 0.934,
+    "geometry_regions": [
+     {
+      "type": "geometry_added",
+      "volume_m3": 0.069,
+      "voxels": 69
+     },
+     {
+      "type": "geometry_added",
+      "volume_m3": 0.023,
+      "voxels": 23
+     },
+     {
+      "type": "geometry_removed",
+      "volume_m3": 0.069,
+      "voxels": 69
+     },
+     {
+      "type": "geometry_removed",
+      "volume_m3": 0.023,
+      "voxels": 23
+     }
+    ]
+   },
+   "confidence": 0.839,
+   "severity": "medium",
+   "id": "chg_001",
+   "baseline_session": "11111111-1111-4111-8111-111111111111",
+   "current_session": "22222222-2222-4222-8222-222222222222",
+   "baseline_time": "2026-10-08T13:00:13Z",
+   "current_time": "2026-10-08T13:00:13Z"
+  },
+  {
+   "type": "object_appeared",
+   "label": "box",
+   "baseline_position": null,
+   "current_position": [
+    -0.806,
+    -1.203,
+    -2.601
+   ],
+   "displacement_m": null,
+   "displacement_range_m": null,
+   "uncertainty_m": 0.058,
+   "region": null,
+   "evidence": [
+    {
+     "scan": "current",
+     "kind": "keyframe",
+     "image": "keyframes/kf_000.jpg",
+     "box": [
+      10.0,
+      10.0,
+      40.0,
+      40.0
+     ],
+     "pixel": null,
+     "note": "detected as box, score 0.60"
+    },
+    {
+     "scan": "baseline",
+     "kind": "keyframe",
+     "image": "keyframes/kf_000.jpg",
+     "box": null,
+     "pixel": [
+      44.3,
+      81.6
+     ],
+     "note": "baseline scan looked here and saw empty space"
+    },
+    {
+     "scan": "baseline",
+     "kind": "keyframe",
+     "image": "keyframes/kf_001.jpg",
+     "box": null,
+     "pixel": [
+      60.4,
+      83.7
+     ],
+     "note": "baseline scan looked here and saw empty space"
+    },
+    {
+     "scan": "baseline",
+     "kind": "keyframe",
+     "image": "keyframes/kf_003.jpg",
+     "box": null,
+     "pixel": [
+      25.7,
+      106.2
+     ],
+     "note": "baseline scan looked here and saw empty space"
+    }
+   ],
+   "support": {
+    "free_space_views": 4,
+    "surface_views": 0,
+    "occluded_views": 0,
+    "detection": 0.936,
+    "views": 3,
+    "alignment": 0.934,
+    "geometry_regions": [
+     {
+      "type": "geometry_added",
+      "volume_m3": 0.041,
+      "voxels": 41
+     }
+    ]
+   },
+   "confidence": 0.82,
+   "severity": "medium",
+   "id": "chg_002",
+   "baseline_session": "11111111-1111-4111-8111-111111111111",
+   "current_session": "22222222-2222-4222-8222-222222222222",
+   "baseline_time": "2026-10-08T13:00:13Z",
+   "current_time": "2026-10-08T13:00:13Z"
+  },
+  {
+   "type": "geometry_added",
+   "label": null,
+   "baseline_position": null,
+   "current_position": [
+    0.235,
+    -0.895,
+    -4.088
+   ],
+   "displacement_m": null,
+   "displacement_range_m": null,
+   "uncertainty_m": 0.124,
+   "region": {
+    "bbox_min": [
+     -0.007,
+     -1.211,
+     -4.503
+    ],
+    "bbox_max": [
+     0.693,
+     -0.711,
+     -3.803
+    ],
+    "volume_m3": 0.092,
+    "voxels": 92
+   },
+   "evidence": [
+    {
+     "scan": "current",
+     "kind": "keyframe",
+     "image": "keyframes/kf_000.jpg",
+     "box": null,
+     "pixel": [
+      87.2,
+      54.1
+     ],
+     "note": "current scan sees a surface here"
+    },
+    {
+     "scan": "current",
+     "kind": "keyframe",
+     "image": "keyframes/kf_001.jpg",
+     "box": null,
+     "pixel": [
+      112.2,
+      57.1
+     ],
+     "note": "current scan sees a surface here"
+    },
+    {
+     "scan": "current",
+     "kind": "keyframe",
+     "image": "keyframes/kf_002.jpg",
+     "box": null,
+     "pixel": [
+      46.5,
+      59.7
+     ],
+     "note": "current scan sees a surface here"
+    },
+    {
+     "scan": "baseline",
+     "kind": "keyframe",
+     "image": "keyframes/kf_000.jpg",
+     "box": null,
+     "pixel": [
+      87.0,
+      54.2
+     ],
+     "note": "baseline scan saw empty space here"
+    },
+    {
+     "scan": "baseline",
+     "kind": "keyframe",
+     "image": "keyframes/kf_001.jpg",
+     "box": null,
+     "pixel": [
+      112.0,
+      57.2
+     ],
+     "note": "baseline scan saw empty space here"
+    },
+    {
+     "scan": "baseline",
+     "kind": "keyframe",
+     "image": "keyframes/kf_002.jpg",
+     "box": null,
+     "pixel": [
+      46.2,
+      59.8
+     ],
+     "note": "baseline scan saw empty space here"
+    }
+   ],
+   "support": {
+    "free_space_views": 7,
+    "surface_views": 0,
+    "own_views": 7,
+    "alignment": 0.934
+   },
+   "confidence": 0.919,
+   "severity": "low",
+   "id": "chg_003",
+   "baseline_session": "11111111-1111-4111-8111-111111111111",
+   "current_session": "22222222-2222-4222-8222-222222222222",
+   "baseline_time": "2026-10-08T13:00:13Z",
+   "current_time": "2026-10-08T13:00:13Z"
+  }
+ ],
+ "unverified": [
+  {
+   "type": "geometry_removed",
+   "label": null,
+   "position": [
+    0.357,
+    -1.333,
+    -4.607
+   ],
+   "reason": "the other scan never looked at this spot",
+   "support": {
+    "free_space_views": 0,
+    "surface_views": 0,
+    "own_views": 4,
+    "alignment": 0.934
+   }
+  }
+ ],
+ "summary": {
+  "changes": 4,
+  "high": 1,
+  "by_type": {
+   "geometry_added": 1,
+   "object_appeared": 1,
+   "object_disappeared": 1,
+   "object_moved": 1
+  },
+  "unverified": 1
+ },
+ "warnings": [],
+ "params": {
+  "k_sigma": 3.0,
+  "min_move": 0.1,
+  "match_gate": 2.0,
+  "inlier": 0.1,
+  "min_fitness": 0.3,
+  "voxel": 0.1,
+  "min_cluster": 15,
+  "max_clusters": 20,
+  "stride": 1
+ },
+ "limitations": [
+  "Single-camera reconstruction: positions are estimates; see each change's uncertainty.",
+  "Only objects named in the scan's search list can be reported as objects.",
+  "Areas seen in only one scan cannot be compared and are never reported as changes.",
+  "Findings are decision support for a human inspector, not a verdict."
+ ]
+}
