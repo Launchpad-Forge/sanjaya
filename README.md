@@ -124,14 +124,14 @@ plain-language note on what was skipped.
 ## Examples
 
 ### Object Detection (OWLv2)
-![Object Detections](assets/owlv2_detections.png)
+![Object Detections](docs/images/media_1791460566974_794b3a63.png)
 
-![Object Crops](assets/owlv2_crops.png)
+![Object Crops](docs/images/media_1791460591922_598a840a.png)
 
 ### Depth Estimation (Depth Anything V2)
-![Depth Estimation](assets/depth_estimation.png)
+![Depth Estimation](docs/images/media_1791460649712_bd6edca0.png)
 
-![Depth Resolution](assets/depth_resolution.png)
+![Depth Resolution](docs/images/media_1791460667614_8a001ec1.png)
 
 ---
 
@@ -219,7 +219,7 @@ python app.py          # needs an NVIDIA GPU (24 GB+ recommended)
 
 ### Run the web app locally
 ```bash
-git clone --recursive https://github.com/<your-account>/sanjaya.git
+git clone --recursive https://github.com/Launchpad-Forge/sanjaya.git
 cd sanjaya
 cp server/.env.example server/.env      # add DATABASE_URL, JWT_SECRET, GEMINI_API_KEY, HF_TOKEN
 cp client/.env.example client/.env

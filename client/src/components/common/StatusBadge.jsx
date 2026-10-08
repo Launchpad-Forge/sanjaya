@@ -28,3 +28,4 @@ export default function StatusBadge({ status, label }) {
     </span>
   );
 }
+
