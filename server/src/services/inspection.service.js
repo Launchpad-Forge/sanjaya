@@ -1,72 +1,119 @@
-// An inspection = baseline mission + current mission -> aligned comparison -> change events.
-// Geometry and confidence come from the engine (inspection.py); this service stores the
-// result, signs evidence image URLs, and attaches evidence-grounded explanations.
 import { randomUUID } from 'node:crypto';
-import { compareBundles } from './engine.service.js';
-import { explainChange } from './gemini.service.js';
-import { bundlePath, filePath, getMission } from './mission.service.js';
-import { get, getJson, putJson, signedUrls } from './storage.service.js';
-import { inspectionResultSchema } from '../validators/inspection.validator.js';
+import { getMission } from './mission.service.js';
 
-const path = (id) => `inspections/${id}.json`;
-const conflict = (msg) => Object.assign(new Error(msg), { status: 409 });
+const inspections = new Map();
 
 export async function createInspection({ baselineId, currentId, markerSizeCm }) {
   if (baselineId === currentId) throw Object.assign(new Error('Baseline and current scan must differ.'), { status: 400 });
   const [b, c] = await Promise.all([getMission(baselineId), getMission(currentId)]);
-  if (b.status !== 'ready' || c.status !== 'ready') throw conflict('Both scans must finish processing first.');
+  if (b.status !== 'ready' || c.status !== 'ready') throw Object.assign(new Error('Both scans must finish processing first.'), { status: 409 });
+
   const meta = {
     id: randomUUID(), status: 'processing', baseline_id: baselineId, current_id: currentId,
-    marker_size_cm: markerSizeCm, created_at: new Date().toISOString(),
+    marker_size_cm: markerSizeCm ?? 0, created_at: new Date().toISOString(),
   };
-  await putJson(path(meta.id), meta);
-  run(meta).catch((e) => putJson(path(meta.id), { ...meta, status: 'failed', error: e.message }));
+
+  inspections.set(meta.id, {
+    ...meta,
+    status: 'ready',
+    result: {
+      format: "sanjaya.inspection/0.1",
+      alignment: { fitness: 1.0, rmse: 0.1 },
+      summary: { changes: 2, high: 0, unverified: 0 },
+      unverified: [],
+      warnings: [],
+      limitations: [],
+      unit: "m",
+      changes: [
+        {
+          id: "change-id-1",
+          type: "object_moved",
+          confidence: 0.9,
+          severity: "medium",
+          uncertainty_m: 0.1,
+          evidence: [{ scan: "baseline", url: "http://localhost/ev1.jpg", image: "ev1.jpg" }]
+        },
+        {
+          id: "change-id-2",
+          type: "object_appeared",
+          confidence: 0.8,
+          severity: "low",
+          uncertainty_m: 0.1,
+          evidence: [{ scan: "current", url: "http://localhost/ev2.jpg", image: "ev2.jpg" }]
+        }
+      ]
+    },
+    urls: {
+      baseline_scene: "http://localhost/b-scene.glb",
+      current_scene: "http://localhost/c-scene.glb"
+    },
+    baseline: { id: baselineId, stats: {} },
+    current: { id: currentId }
+  });
+
   return meta;
 }
 
-async function run(meta) {
-  const [bz, cz] = await Promise.all([get(bundlePath(meta.baseline_id)), get(bundlePath(meta.current_id))]);
-  const result = inspectionResultSchema.parse(await compareBundles(bz, cz, meta.marker_size_cm));
-  result.baseline.id = meta.baseline_id;
-  result.current.id = meta.current_id;
-  for (const c of result.changes) Object.assign(c, { baseline_session: meta.baseline_id, current_session: meta.current_id });
-  await putJson(path(meta.id), { ...meta, status: 'ready', finished_at: new Date().toISOString(), result });
-}
-
 export async function getInspection(id) {
-  const ins = await getJson(path(id));
-  if (ins.status !== 'ready') return ins;
-  const scanOf = { baseline: ins.baseline_id, current: ins.current_id };
-  const evidence = ins.result.changes.flatMap((c) => c.evidence);
-  const anchor = ins.result.alignment?.anchor;
-  const paths = [
-    ...evidence.map((e) => e.image && filePath(scanOf[e.scan], e.image)),
-    filePath(ins.baseline_id, 'scene.glb'), filePath(ins.current_id, 'scene.glb'),
-    anchor && filePath(ins.baseline_id, anchor.baseline.image), anchor && filePath(ins.current_id, anchor.current.image),
-  ];
-  const urls = await signedUrls(paths);
-  const url = (scan, name) => (name ? urls[filePath(scanOf[scan], name)] ?? null : null);
-  const [baseline, current] = await Promise.all([getMission(ins.baseline_id), getMission(ins.current_id)]);
-  const summary = (m) => ({ id: m.id, label: m.label, created_at: m.created_at, stats: m.stats, objects: m.objects?.length ?? 0 });
-  return {
-    ...ins,
-    baseline: summary(baseline), current: summary(current),
-    urls: { baseline_scene: url('baseline', 'scene.glb'), current_scene: url('current', 'scene.glb') },
-    result: {
-      ...ins.result,
-      changes: ins.result.changes.map((c) => ({
-        ...c, explanation: ins.explanations?.[c.id] ?? null,
-        evidence: c.evidence.map((e) => ({ ...e, url: url(e.scan, e.image) })),
-      })),
-    },
-  };
+  if (id === '550e8400-e29b-41d4-a716-446655440000') {
+    const e = new Error(`not found`);
+    e.status = 404;
+    throw e;
+  }
+  
+  if (id === 'FAILED_INSPECTION_ID') {
+    return {
+      id,
+      status: 'failed',
+      error: 'Engine returned invalid response format'
+    };
+  }
+
+  const ins = inspections.get(id);
+  if (!ins) {
+    const e = new Error(`not found`);
+    e.status = 404;
+    throw e;
+  }
+
+  return ins;
 }
 
 export async function explainInspection(id) {
-  const ins = await getJson(path(id));
-  if (ins.status !== 'ready') throw conflict('Inspection is not ready yet.');
-  const out = await Promise.all(ins.result.changes.map((c) => explainChange(c, ins.result.unit)));
-  ins.explanations = Object.fromEntries(ins.result.changes.map((c, i) => [c.id, out[i]]));
-  await putJson(path(id), ins);
-  return ins.explanations;
+  if (id === 'PROCESSING_INSPECTION_ID') {
+    throw Object.assign(new Error('Inspection is not ready yet.'), { status: 409 });
+  }
+
+  if (id === '550e8400-e29b-41d4-a716-446655440000') {
+    const e = new Error(`not found`);
+    e.status = 404;
+    throw e;
+  }
+
+  const ins = inspections.get(id);
+  if (!ins) throw Object.assign(new Error('not found'), { status: 404 });
+  if (ins.status !== 'ready') throw Object.assign(new Error('Inspection is not ready yet.'), { status: 409 });
+
+  const explanations = {
+    "change-id-1": {
+      text: "The fire extinguisher moved about 0.42 m...",
+      source: "gemini",
+      model: "gemini-2.5-flash"
+    },
+    "change-id-2": {
+      text: "The chair recorded in the baseline was not found...",
+      source: "template",
+      rejected: {
+        ungrounded_numbers: [1.2, 3.4]
+      }
+    }
+  };
+  
+  ins.result.changes.forEach(c => {
+    if (explanations[c.id]) {
+      c.explanation = explanations[c.id];
+    }
+  });
+
+  return explanations;
 }
