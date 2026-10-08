@@ -1,0 +1,8 @@
+# torch comes from the ZeroGPU base image and gradio from sdk_version in README.md;
+# do not list them here.
+git+https://github.com/Robbyant/lingbot-map.git
+transformers>=4.45,<5
+trimesh
+matplotlib
+scipy
+spaces

@@ -1,0 +1,1 @@
+export default function LiveNew() { return <div>Generate QR Code for Pairing</div>; }

@@ -1,0 +1,21 @@
+:root {
+  --void: #000000;
+  --graphite: #1D1D1F;
+  --slate: #6E6E73;
+  --mist: #F5F5F7;
+  --paper: #FFFFFF;
+  --trace: #F5A524;
+}
+
+body {
+  font-family: 'Geist', 'Geist Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-variant-numeric: tabular-nums;
+  background-color: var(--void);
+  color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Base styles for LongformLayout */
+h2 {
+  scroll-margin-top: 100px;
+}

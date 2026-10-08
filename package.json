@@ -1,0 +1,15 @@
+{
+  "name": "sanjaya",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["client", "server"],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w client\" \"npm run dev -w server\"",
+    "dev:engine": "cd engine && uvicorn app.main:app --reload --port 8000",
+    "lint": "npm run lint -w client && npm run lint -w server",
+    "build": "npm run build -w client"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

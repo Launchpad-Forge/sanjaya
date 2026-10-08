@@ -1,0 +1,12 @@
+[submodule "engine/third_party/VGGT-SLAM"]
+	path = engine/third_party/VGGT-SLAM
+	url = https://github.com/MIT-SPARK/VGGT-SLAM
+[submodule "engine/third_party/lingbot-map"]
+	path = engine/third_party/lingbot-map
+	url = https://github.com/robbyant/lingbot-map
+[submodule "engine/third_party/Hydra"]
+	path = engine/third_party/Hydra
+	url = https://github.com/MIT-SPARK/Hydra
+[submodule "engine/third_party/MASt3R-SLAM"]
+	path = engine/third_party/MASt3R-SLAM
+	url = https://github.com/rmurai0610/MASt3R-SLAM

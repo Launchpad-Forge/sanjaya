@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "SANJAYA"
+    given-names: "Contributors"
+title: "SANJAYA: Single-Camera 3D Mapping Engine"
+version: 0.1.0

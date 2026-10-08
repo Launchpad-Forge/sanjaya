@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  RESEARCHER
+  ADMIN
+}
+
+enum SessionStatus {
+  PAIRING
+  STREAMING
+  ENDED
+}
+
+enum IdeaCategory {
+  RESEARCH
+  FEATURE
+  DATASET
+  USE_CASE
+}
+
+enum IdeaStatus {
+  OPEN
+  ACCEPTED
+  IN_PROGRESS
+  DONE
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+
+  LiveSession  LiveSession[]
+  Mission      Mission[]
+  Idea         Idea[]
+  IdeaVote     IdeaVote[]
+  AuditLog     AuditLog[]
+}
+
+model LiveSession {
+  id          String        @id @default(uuid())
+  userId      String?
+  status      SessionStatus @default(PAIRING)
+  pairingCode String?
+  engineMode  String        @default("mock")
+  startedAt   DateTime      @default(now())
+  endedAt     DateTime?
+
+  User        User?         @relation(fields: [userId], references: [id])
+}
+
+model Mission {
+  id             String   @id @default(uuid())
+  userId         String
+  title          String
+  siteName       String?
+  sessionId      String?
+  pointCloudUrl  String?
+  sceneGraphJson String?
+  stats          Json?
+  createdAt      DateTime @default(now())
+
+  User           User     @relation(fields: [userId], references: [id])
+  Entity         Entity[]
+}
+
+model Entity {
+  id               String   @id @default(uuid())
+  missionId        String
+  label            String
+  x                Float
+  y                Float
+  z                Float
+  confidence       Float
+  evidenceFrameUrl String?
+  confirmed        Boolean  @default(false)
+  firstSeen        DateTime @default(now())
+  lastSeen         DateTime @default(now())
+
+  Mission          Mission  @relation(fields: [missionId], references: [id])
+}
+
+model Idea {
+  id        String       @id @default(uuid())
+  userId    String
+  title     String
+  body      String
+  category  IdeaCategory
+  status    IdeaStatus   @default(OPEN)
+  createdAt DateTime     @default(now())
+
+  User      User         @relation(fields: [userId], references: [id])
+  IdeaVote  IdeaVote[]
+}
+
+model IdeaVote {
+  userId String
+  ideaId String
+  User   User   @relation(fields: [userId], references: [id])
+  Idea   Idea   @relation(fields: [ideaId], references: [id])
+
+  @@id([userId, ideaId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  target    String
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  User      User?    @relation(fields: [userId], references: [id])
+}

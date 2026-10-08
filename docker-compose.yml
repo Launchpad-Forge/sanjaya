@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  server:
+    build:
+      context: ./server
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - engine
+  engine:
+    build:
+      context: ./engine
+    ports:
+      - "8000:8000"
+    environment:
+      - ENGINE_MODE=mock
