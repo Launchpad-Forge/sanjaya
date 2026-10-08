@@ -1,23 +1,23 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-export default function ProtectedRoute({ children }) {
+export default function GuestOnlyRoute({ children }) {
   const { user, loading } = useAuth();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-void text-slate font-mono text-sm">
         <span className="w-2 h-2 rounded-full bg-trace animate-ping mr-2" />
-        Authenticating...
+        Checking session...
       </div>
     );
   }
 
-  if (!user) {
-    const next = encodeURIComponent(location.pathname + location.search);
-    return <Navigate to={`/login?next=${next}`} replace />;
+  if (user) {
+    const next = searchParams.get('next') || '/app';
+    return <Navigate to={next} replace />;
   }
 
   return children;

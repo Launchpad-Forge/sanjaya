@@ -1,57 +1,82 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+
+// Layouts
+import PublicLayout from './components/layout/PublicLayout';
+import AppLayout from './components/layout/AppLayout';
+import ProtectedRoute from './components/layout/ProtectedRoute';
+import GuestOnlyRoute from './components/layout/GuestOnlyRoute';
 
 // Public Pages
 import Landing from './pages/public/Landing';
-import Try from './pages/public/Try';
-import Auth from './pages/public/Auth';
-import NotFound from './pages/public/NotFound';
+import Technology from './pages/public/Technology';
+import Inspection from './pages/public/Inspection';
 import Research from './pages/public/Research';
+import Developers from './pages/public/Developers';
+import Impact from './pages/public/Impact';
+import About from './pages/public/About';
+import Join from './pages/public/Join';
 import Docs from './pages/public/Docs';
 import Contribute from './pages/public/Contribute';
 import Community from './pages/public/Community';
 import Policy from './pages/public/Policy';
+import Auth from './pages/public/Auth';
+import NotFound from './pages/public/NotFound';
 
-// App Pages
-import Home from './pages/app/Home';
-import LiveNew from './pages/app/LiveNew';
-import LiveView from './pages/app/LiveView';
-import Capture from './pages/app/Capture';
+// Inspect Experience
+import Inspect from './pages/inspect/Inspect';
+
+// App Workspace Pages
+import Dashboard from './pages/app/Dashboard';
+import Inspections from './pages/app/Inspections';
 import Profile from './pages/app/Profile';
-
-// Layouts
-import AppLayout from './components/layout/AppLayout';
+import Settings from './pages/app/Settings';
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/try" element={<Try />} />
-      
-      <Route path="/login" element={<Auth />} />
-      <Route path="/register" element={<Auth />} />
-      
-      <Route path="/research" element={<Research />} />
-      <Route path="/docs" element={<Docs />} />
-      <Route path="/contribute" element={<Contribute />} />
-      <Route path="/community" element={<Community />} />
-      
-      {/* Policies */}
-      <Route path="/responsible-use" element={<Policy title="Responsible Use Policy" />} />
-      <Route path="/privacy" element={<Policy title="Privacy Policy" />} />
-      <Route path="/terms" element={<Policy title="Terms of Service" />} />
-      <Route path="/security" element={<Policy title="Vulnerability Disclosure" />} />
-      <Route path="/accessibility" element={<Policy title="Accessibility Statement" />} />
-      
-      {/* App Routes */}
-      <Route path="/capture/:sessionId" element={<Capture />} />
-      <Route element={<AppLayout />}>
-        <Route path="/home" element={<Home />} />
-        <Route path="/live/new" element={<LiveNew />} />
-        <Route path="/live/:sessionId" element={<LiveView />} />
-        <Route path="/profile" element={<Profile />} />
+      {/* Public Pages with Standard Header/Footer */}
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Landing />} />
+        <Route path="/technology" element={<Technology />} />
+        <Route path="/inspection" element={<Inspection />} />
+        <Route path="/research" element={<Research />} />
+        <Route path="/developers" element={<Developers />} />
+        <Route path="/impact" element={<Impact />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/join" element={<Join />} />
+        <Route path="/docs" element={<Docs />} />
+        <Route path="/contribute" element={<Contribute />} />
+        <Route path="/community" element={<Community />} />
+        
+        {/* Policies */}
+        <Route path="/responsible-use" element={<Policy title="Responsible Use Policy" />} />
+        <Route path="/privacy" element={<Policy title="Privacy Policy" />} />
+        <Route path="/terms" element={<Policy title="Terms of Service" />} />
+        <Route path="/security" element={<Policy title="Vulnerability Disclosure" />} />
+        <Route path="/accessibility" element={<Policy title="Accessibility Statement" />} />
       </Route>
-      
-      {/* 404 */}
+
+      {/* Guest-only Authentication Routes */}
+      <Route path="/login" element={<GuestOnlyRoute><Auth /></GuestOnlyRoute>} />
+      <Route path="/register" element={<GuestOnlyRoute><Auth /></GuestOnlyRoute>} />
+
+      {/* Inspection Experience (Guest or Authenticated) */}
+      <Route path="/inspect" element={<Inspect />} />
+      <Route path="/try" element={<Navigate to="/inspect" replace />} />
+      <Route path="/live/new" element={<Navigate to="/inspect" replace />} />
+
+      {/* Authenticated App Workspace */}
+      <Route path="/app" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+        <Route index element={<Dashboard />} />
+        <Route path="inspections" element={<Inspections />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="settings" element={<Settings />} />
+      </Route>
+
+      {/* Legacy Route Redirects */}
+      <Route path="/home" element={<Navigate to="/app" replace />} />
+
+      {/* 404 Fallback */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
