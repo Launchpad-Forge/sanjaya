@@ -49,7 +49,8 @@ export default function Navbar() {
             <Link 
               key={link.path} 
               to={link.path} 
-              className={pathname === link.path ? 'is-active text-trace' : ''}
+              aria-current={pathname === link.path ? 'page' : undefined}
+              className={pathname === link.path ? 'is-active' : ''}
             >
               {link.label}
             </Link>

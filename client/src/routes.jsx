@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Layouts
@@ -20,12 +21,15 @@ import Contribute from './pages/public/Contribute';
 import Community from './pages/public/Community';
 import Policy from './pages/public/Policy';
 import Auth from './pages/public/Auth';
+import AuthCallback from './pages/public/AuthCallback';
 import NotFound from './pages/public/NotFound';
 
 // Inspect Experience
-import Inspect from './pages/inspect/Inspect';
-import InspectionResult from './pages/inspect/Inspection';
-import InspectionReport from './pages/inspect/Report';
+const Mission = lazy(() => import('./pages/inspect/Mission'));
+const Capture = lazy(() => import('./pages/app/Capture'));
+const Inspect = lazy(() => import('./pages/inspect/Inspect'));
+const InspectionResult = lazy(() => import('./pages/inspect/Inspection'));
+const InspectionReport = lazy(() => import('./pages/inspect/Report'));
 
 // App Workspace Pages
 import Dashboard from './pages/app/Dashboard';
@@ -35,6 +39,7 @@ import Settings from './pages/app/Settings';
 
 export default function AppRoutes() {
   return (
+    <Suspense fallback={<div className="route-loading" role="status">Loading your workspace…</div>}>
     <Routes>
       {/* Public Pages with Standard Header/Footer */}
       <Route element={<PublicLayout />}>
@@ -58,11 +63,15 @@ export default function AppRoutes() {
         <Route path="/accessibility" element={<Policy title="Accessibility Statement" />} />
       </Route>
 
+      <Route path="/auth/callback" element={<AuthCallback />} />
+
       {/* Guest-only Authentication Routes */}
       <Route path="/login" element={<GuestOnlyRoute><Auth /></GuestOnlyRoute>} />
       <Route path="/register" element={<GuestOnlyRoute><Auth /></GuestOnlyRoute>} />
 
       {/* Inspection Experience (Guest or Authenticated) */}
+      <Route path="/capture/:id" element={<Capture />} />
+      <Route path="/missions/:id" element={<Mission />} />
       <Route path="/inspect" element={<Inspect />} />
       <Route path="/inspection/:id" element={<InspectionResult />} />
       <Route path="/reports/:id" element={<InspectionReport />} />
@@ -83,5 +92,6 @@ export default function AppRoutes() {
       {/* 404 Fallback */}
       <Route path="*" element={<NotFound />} />
     </Routes>
+    </Suspense>
   );
 }

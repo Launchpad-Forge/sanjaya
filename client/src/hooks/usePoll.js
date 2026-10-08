@@ -5,11 +5,11 @@ export default function usePoll(fetcher, key, ms = 4000) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   useEffect(() => {
+    setData(null);
+    setError(null);
     if (!key) return undefined;
     let stop = false;
     let timer;
-    setData(null);
-    setError(null);
     const tick = async () => {
       try {
         const d = await fetcher(key);

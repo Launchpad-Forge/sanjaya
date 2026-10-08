@@ -21,7 +21,7 @@ async function download(file) {
 }
 
 /** Video -> mission bundle (zip Buffer) + the engine's status text. ~1-2 min of GPU. */
-export async function mapVideo(video, mime, { scene = 'Indoor', things = '' } = {}) {
+export async function mapVideo(video, mime, { scene = 'Indoor', things = 'door, staircase, chair, table, window, fire extinguisher' } = {}) {
   const app = await connect();
   const blob = new Blob([video], { type: mime });
   // /map inputs, in order: image_files, video_file, scene, things, fps, max_frames, keyframes, conf_pct, min_score
@@ -30,6 +30,16 @@ export async function mapVideo(video, mime, { scene = 'Indoor', things = '' } = 
   const bundle = files.find((f) => /\.zip$/i.test(f.path || f.url));
   if (!bundle) throw new Error('engine returned no mission bundle');
   return { bundle: await download(bundle), status: r.data.find((d) => typeof d === 'string') ?? '' };
+}
+
+/** Ordered overlapping photographs use the same reconstruction pipeline as video. */
+export async function mapImages(images, { scene = 'Indoor' } = {}) {
+  const app = await connect();
+  const uploads = images.map(({ name, data, mime }) => handle_file(new File([data], name, { type: mime })));
+  const r = await app.predict('/map', [uploads, null, scene, 'door, staircase, chair, table, window, fire extinguisher', 6, 96, 12, 50, 0.3]);
+  const bundle = r.data.find(d => d && typeof d === 'object' && d.url && /\.zip$/i.test(d.path || d.url));
+  if (!bundle) throw new Error('engine returned no mission bundle');
+  return { bundle: await download(bundle), status: r.data.find(d => typeof d === 'string') ?? '' };
 }
 
 /** Two mission bundles -> inspection result (CPU on the Space, no GPU quota). */

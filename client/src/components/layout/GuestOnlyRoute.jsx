@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
+import { safeAuthDestination } from '../../lib/authRedirect';
 import { useAuth } from '../../context/AuthContext';
 
 export default function GuestOnlyRoute({ children }) {
@@ -16,7 +17,7 @@ export default function GuestOnlyRoute({ children }) {
   }
 
   if (user) {
-    const next = searchParams.get('next') || '/app';
+    const next = safeAuthDestination(searchParams.get('next'));
     return <Navigate to={next} replace />;
   }
 

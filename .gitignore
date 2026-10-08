@@ -9,3 +9,7 @@ venv/
 .venv/
 videos/
 *.pt
+
+# Local frontend environment overrides
+.env.local
+.env.*.local

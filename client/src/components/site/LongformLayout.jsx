@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from './Navbar';
-import Footer from './Footer';
 
 export default function LongformLayout({ title, date, children }) {
   const [headings, setHeadings] = useState([]);
 
   useEffect(() => {
     // Generate simple ToC from h2 elements inside the content
-    const elements = Array.from(document.querySelectorAll('main h2'));
+    const elements = Array.from(document.querySelectorAll('.longform-article h2'));
     const items = elements.map((el) => {
       if (!el.id) {
         el.id = el.textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -18,10 +16,8 @@ export default function LongformLayout({ title, date, children }) {
   }, [children]);
 
   return (
-    <div className="min-h-screen bg-paper font-sans text-graphite selection:bg-trace selection:text-void flex flex-col">
-      <div className="bg-void text-paper">
-        <Navbar />
-      </div>
+    <div className="longform-page font-sans flex flex-col">
+
       
       <div className="flex-1 max-w-site mx-auto w-full px-side-mob md:px-side-desk py-24 flex flex-col md:flex-row gap-16 relative">
         
@@ -41,17 +37,17 @@ export default function LongformLayout({ title, date, children }) {
           </div>
         </aside>
 
-        <main className="flex-1 max-w-text w-full">
+        <article className="longform-article flex-1 max-w-text w-full">
           <h1 className="text-display mb-6">{title}</h1>
           {date && <p className="text-small text-slate mb-12">Last updated {date}</p>}
           
           <div className="prose prose-slate prose-lg max-w-none">
             {children}
           </div>
-        </main>
+        </article>
       </div>
 
-      <Footer />
+
     </div>
   );
 }

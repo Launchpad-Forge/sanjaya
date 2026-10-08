@@ -1,435 +1,79 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ShaderBackground from '../../components/site/ShaderBackground';
 import SpatialPreview from '../../components/site/SpatialPreview';
 import HeroVideo from '../../components/site/HeroVideo';
 import StatusBadge from '../../components/common/StatusBadge';
+import Faq from '../../components/site/Faq';
 import { Arrow } from '../../components/site/Brand';
 import { siteConfig } from '../../config/site';
 
+const steps = [
+  ['Observe', 'Start with an ordinary camera. Capture a walkthrough of the space around you.'],
+  ['Understand', 'Reconstruct geometry and connect objects to the places they belong.'],
+  ['Remember', 'Keep a baseline of the environment. A reference you can return to.'],
+  ['Compare', 'Rescan the space. Explore what moved, what appeared, and what needs attention.'],
+];
+const capabilities = [
+  { title: 'Spatial perception', status: 'AVAILABLE', description: 'The foundation: turning camera observations into a structured view of the world.', items: ['Monocular 3D reconstruction', 'Camera trajectory & object localization', 'Scene graphs & map exports'] },
+  { title: 'Inspection intelligence', status: 'BUILDING', description: 'The first application: understanding a space across more than one visit.', items: ['Baseline and repeat scans', 'Spatial alignment & change detection', 'Evidence-grounded inspection reports'] },
+  { title: 'A connected platform', status: 'PLANNED', description: 'The direction: spatial memory that other systems can build on.', items: ['Persistent world models', 'Developer SDK & streaming adapters', 'Robotics & multi-camera integration'] },
+];
+const questions = [
+  { q: 'What is a baseline scan?', a: 'A baseline is your reference view of a space. Record a slow walkthrough, let the engine reconstruct it, then save it as the baseline for a later comparison.' },
+  { q: 'Do I need a special camera?', a: 'Start with an ordinary phone camera or upload a video. The inspection workflow uses standard camera footage; a LiDAR sensor is not required.' },
+  { q: 'How should I record a repeat scan?', a: 'Start in the same place, face the same direction, and follow a similar path. Move slowly and keep the scene well lit to give the engine useful overlap between visits.' },
+  { q: 'Is this a precision surveying tool?', a: 'Sanjaya is a research prototype. Reconstructed scale and detected changes need review; they should not be treated as independently verified survey measurements.' },
+  { q: 'Can I explore without an account?', a: 'Yes. The inspection flow supports guest access. You can also explore the methods, documentation, and source code before creating a workspace.' },
+];
+
 export default function Landing() {
-  useEffect(() => { 
-    document.title = 'SANJAYA — Spatial Intelligence for the Physical World'; 
-  }, []);
-
+  useEffect(() => { document.title = 'Sanjaya — Spatial intelligence for the physical world'; }, []);
   return (
-    <div className="landing-page bg-void text-paper min-h-screen font-sans">
+    <div className="landing-page landing-refined">
       <ShaderBackground variant="mesh" />
-
-      {/* SECTION 1 — HERO */}
-      <section className="landing-hero page-container pt-12 pb-20">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-trace mb-6">
-          <span className="w-1.5 h-1.5 rounded-full bg-trace animate-pulse" />
-          SANJAYA / SPATIAL INTELLIGENCE
-        </div>
-        
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 max-w-4xl leading-tight">
-          Intelligence shouldn't <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-paper via-paper to-slate">
-            stop at the frame.
-          </span>
-        </h1>
-        
-        <p className="hero-description text-slate text-lg md:text-xl max-w-2xl mb-8 leading-relaxed">
-          Sanjaya is building persistent spatial intelligence that helps machines and people reconstruct physical environments, understand what exists within them, remember their state, and detect how they change.
-        </p>
-
-        <div className="hero-actions flex flex-wrap gap-4 mb-10">
-          <Link to="/technology" className="button-primary">
-            Explore Sanjaya <Arrow />
-          </Link>
-          <Link to="/inspect" className="button-secondary">
-            Start Inspection <Arrow diagonal />
-          </Link>
-        </div>
-
-        <div className="hero-meta flex items-center gap-6 text-xs font-mono text-slate border-t border-white/10 pt-6">
-          <span>Ordinary Monocular Video</span>
-          <span>•</span>
-          <span>No LiDAR Required</span>
-          <span>•</span>
-          <span>Spatial Graph Memory</span>
-          <span>•</span>
-          <a 
-            href={siteConfig.githubUrl || "https://github.com/Launchpad-Forge/sanjaya"} 
-            target="_blank" 
-            rel="noreferrer" 
-            className="text-paper hover:text-trace transition-colors flex items-center gap-1"
-          >
-            View on GitHub <Arrow diagonal />
-          </a>
-        </div>
-
-        {/* Hero Visual Container */}
-        <div className="mt-12 rounded-xl overflow-hidden border border-white/10 bg-graphite/50 p-2 shadow-2xl">
-          <HeroVideo />
-        </div>
+      <section className="landing-hero page-container">
+        <Link to="/research" className="hero-eyebrow"><span className="status-dot" /> OPEN RESEARCH. A WORLD BEYOND THE FRAME. <Arrow /></Link>
+        <h1>Intelligence shouldn’t<br /><span>stop at the frame.</span></h1>
+        <p className="hero-description">Turn everyday video into an understanding of the physical world.<br className="desktop-break" /> Reconstruct a space. Remember its state. See what changes.</p>
+        <div className="hero-actions"><Link to="/inspect" className="button-primary">Start an inspection <Arrow /></Link><Link to="/technology" className="button-secondary">Explore the technology <Arrow diagonal /></Link></div>
+        <div className="hero-meta"><span>Any camera</span><span>No LiDAR required</span><span>Open research</span></div>
+        <SpatialPreview />
+        <div className="hero-footnote"><span>FROM CAMERA FRAMES TO SPATIAL MEMORY</span><a href="#how-it-works">A new way to see <span aria-hidden="true">↓</span></a></div>
       </section>
 
-      {/* SECTION 2 — THE GAP */}
-      <section className="landing-section page-container py-24 border-t border-white/10 bg-graphite/20">
-        <div className="section-heading mb-12">
-          <span className="eyebrow text-trace font-mono text-xs uppercase tracking-widest block mb-2">THE MISSING LAYER</span>
-          <h2 className="text-3xl md:text-5xl font-bold">Seeing is not the same as<br />understanding a world.</h2>
-        </div>
+      <div className="research-strip page-container"><span>BUILT ON OPEN<br />RESEARCH</span><div>{['LingBot-Map', 'Depth Anything', 'OWLv2', 'Hydra'].map(name => <Link key={name} to="/research">{name}</Link>)}</div></div>
 
-        <p className="text-slate text-base md:text-lg max-w-3xl mb-12 leading-relaxed">
-          Computer vision sees frames. Mapping systems reconstruct geometry. Vision-language models explain static images. But machines operating in the physical world need something more: a persistent understanding of what exists, where it exists, how it changes, and how certain that understanding is.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <div className="p-6 rounded-lg bg-graphite border border-white/5 space-y-3">
-            <span className="text-xs font-mono text-slate">OBJECT DETECTION</span>
-            <h3 className="font-semibold text-paper text-sm">"What is visible"</h3>
-            <p className="text-xs text-slate">Frame-by-frame 2D bounding boxes without persistent spatial coordinate grounding.</p>
-          </div>
-          <div className="p-6 rounded-lg bg-graphite border border-white/5 space-y-3">
-            <span className="text-xs font-mono text-slate">3D MAPPING</span>
-            <h3 className="font-semibold text-paper text-sm">"Where geometry exists"</h3>
-            <p className="text-xs text-slate">Raw point clouds and meshes lacking semantic meaning or object hierarchy.</p>
-          </div>
-          <div className="p-6 rounded-lg bg-graphite border border-white/5 space-y-3">
-            <span className="text-xs font-mono text-slate">VISION-LANGUAGE MODELS</span>
-            <h3 className="font-semibold text-paper text-sm">"What an image means"</h3>
-            <p className="text-xs text-slate">Un-grounded text descriptions prone to spatial hallucinations across time.</p>
-          </div>
-          <div className="p-6 rounded-lg bg-graphite border border-white/5 space-y-3">
-            <span className="text-xs font-mono text-slate">DIGITAL TWINS</span>
-            <h3 className="font-semibold text-paper text-sm">"Structured models"</h3>
-            <p className="text-xs text-slate">Static CAD models that don't update automatically as physical environments change.</p>
-          </div>
-        </div>
-
-        <div className="p-8 rounded-xl bg-void border border-trace/30 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <div className="text-xs font-mono text-trace font-bold mb-1">SANJAYA ARCHITECTURE FLOW</div>
-            <div className="text-sm font-medium text-paper">Observe → Reconstruct → Understand → Remember → Compare → Explain → Act</div>
-          </div>
-          <Link to="/technology" className="button-secondary shrink-0 text-xs">
-            Learn how the stack works <Arrow />
-          </Link>
-        </div>
+      <section id="how-it-works" className="landing-section page-container">
+        <div className="section-heading"><div><span className="eyebrow">01 / THE MISSING LAYER</span><h2>Seeing a frame is just<br /><span className="text-soft">the beginning.</span></h2></div><p>A picture captures a moment. A spatial model connects the places, objects, and changes that give that moment meaning.</p></div>
+        <div className="steps-grid">{steps.map(([title, body], i) => <article key={title}><div className="step-number">0{i + 1}<span aria-hidden="true">{['↗', '◇', '⌘', '↔'][i]}</span></div><h3>{title}</h3><p>{body}</p></article>)}</div>
       </section>
 
-      {/* SECTION 3 — WHAT EXISTS TODAY */}
-      <section className="landing-section page-container py-24 border-t border-white/10">
-        <div className="section-heading mb-12">
-          <span className="eyebrow text-trace font-mono text-xs uppercase tracking-widest block mb-2">CURRENT SYSTEM</span>
-          <h2 className="text-3xl md:text-4xl font-bold">A working spatial engine, not a concept slide.</h2>
-          <p className="text-slate text-sm mt-2">Transparent capability status across development phases.</p>
+      <section className="landing-section page-container capabilities">
+        <div className="section-heading"><div><span className="eyebrow">02 / FROM PIXELS TO PLACES</span><h2>A world you can<br />make sense of.</h2></div><Link to="/technology" className="text-link">Inside the spatial engine <Arrow diagonal /></Link></div>
+        <div className="capability-grid">
+          <article className="capability-card feature-recording"><div className="card-copy"><span className="card-kicker">RECONSTRUCT THE SPACE</span><h3>A new dimension in every frame.</h3><p>Camera observations become 3D geometry and a camera trajectory. The first step toward a shared understanding.</p></div><div className="recording-wrap"><HeroVideo /><span className="recording-label">RECONSTRUCTION RECORDING</span></div></article>
+          <article className="capability-card"><div className="card-copy"><span className="card-kicker">CONNECT WHAT’S INSIDE</span><h3>More than a cloud of points.</h3><p>Organize rooms, routes, and objects into a scene graph. A compact map of how a space fits together.</p></div><div className="mini-graph" aria-label="Illustrative scene graph"><span className="graph-node graph-root">Environment</span><div className="graph-branches"><span>Places</span><span>Objects</span><span>Routes</span></div><span className="diagram-caption">GEOMETRY BECOMES CONTEXT.</span></div></article>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* AVAILABLE */}
-          <div className="p-6 rounded-xl bg-graphite/40 border border-white/10 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <span className="font-mono text-xs font-bold text-paper">PERCEPTION & GEOMETRY</span>
-              <StatusBadge status="AVAILABLE" />
-            </div>
-            <ul className="space-y-2.5 text-xs text-slate font-mono">
-              <li className="flex items-center gap-2"><span className="text-emerald-400">✓</span> Monocular video → 3D reconstruction</li>
-              <li className="flex items-center gap-2"><span className="text-emerald-400">✓</span> Camera trajectory estimation</li>
-              <li className="flex items-center gap-2"><span className="text-emerald-400">✓</span> Approximate metric scale (Depth Anything V2)</li>
-              <li className="flex items-center gap-2"><span className="text-emerald-400">✓</span> Open-vocabulary object detection (OWLv2)</li>
-              <li className="flex items-center gap-2"><span className="text-emerald-400">✓</span> Objects lifted into 3D coordinates</li>
-              <li className="flex items-center gap-2"><span className="text-emerald-400">✓</span> Multi-view object spatial fusion</li>
-              <li className="flex items-center gap-2"><span className="text-emerald-400">✓</span> Mental map / place graph generation</li>
-              <li className="flex items-center gap-2"><span className="text-emerald-400">✓</span> Unexplored region & frontier estimation</li>
-              <li className="flex items-center gap-2"><span className="text-emerald-400">✓</span> 3D scene & mission bundle exports</li>
-            </ul>
-          </div>
-
-          {/* BUILDING NOW */}
-          <div className="p-6 rounded-xl bg-graphite/40 border border-white/10 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <span className="font-mono text-xs font-bold text-paper">INSPECTION INTELLIGENCE</span>
-              <StatusBadge status="BUILDING" />
-            </div>
-            <ul className="space-y-2.5 text-xs text-slate font-mono">
-              <li className="flex items-center gap-2"><span className="text-amber-400">⚡</span> Baseline environment scans</li>
-              <li className="flex items-center gap-2"><span className="text-amber-400">⚡</span> Multi-visit re-scan alignment</li>
-              <li className="flex items-center gap-2"><span className="text-amber-400">⚡</span> Temporal change detection</li>
-              <li className="flex items-center gap-2"><span className="text-amber-400">⚡</span> 3D change spatial localization</li>
-              <li className="flex items-center gap-2"><span className="text-amber-400">⚡</span> Evidence-grounded report synthesis</li>
-            </ul>
-          </div>
-
-          {/* NEXT */}
-          <div className="p-6 rounded-xl bg-graphite/40 border border-white/10 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <span className="font-mono text-xs font-bold text-paper">WORLD MODELS & PLATFORM</span>
-              <StatusBadge status="PLANNED" />
-            </div>
-            <ul className="space-y-2.5 text-xs text-slate font-mono opacity-80">
-              <li className="flex items-center gap-2"><span>○</span> Persistent world models</li>
-              <li className="flex items-center gap-2"><span>○</span> Realtime incremental streaming</li>
-              <li className="flex items-center gap-2"><span>○</span> Sanjaya Spatial SDK</li>
-              <li className="flex items-center gap-2"><span>○</span> ROS2 / MAVSDK robotics adapters</li>
-              <li className="flex items-center gap-2"><span>○</span> Multi-camera sensor fusion</li>
-            </ul>
-          </div>
-        </div>
+        <div className="engine-ribbon"><span className="eyebrow">THE SPATIAL ENGINE</span><div>{['Geometry', 'Scale', 'Objects', 'Scene graph', 'Coverage'].map((stage, index) => <span key={stage}><small>0{index + 1}</small>{stage}{index < 4 && <Arrow />}</span>)}</div></div>
       </section>
 
-      {/* SECTION 4 — SANJAYA ENGINE */}
-      <section className="landing-section page-container py-24 border-t border-white/10 bg-graphite/10">
-        <div className="section-heading mb-12">
-          <span className="eyebrow text-trace font-mono text-xs uppercase tracking-widest block mb-2">SPATIAL ENGINE PIPELINE</span>
-          <h2 className="text-3xl md:text-4xl font-bold">The engine beneath Sanjaya.</h2>
-          <p className="text-slate text-sm mt-2 max-w-2xl">
-            A 5-stage deterministic perception pipeline backed by AI-grounded reasoning.
-          </p>
-        </div>
-
-        {/* Visual Pipeline */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 font-mono text-xs mb-12">
-          <div className="p-4 rounded bg-graphite border border-white/10 space-y-2">
-            <span className="text-trace">01. GEOMETRY</span>
-            <h4 className="font-bold text-paper">LingBot-Map</h4>
-            <p className="text-[11px] text-slate">Streaming 3D points + camera path pose</p>
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/10 space-y-2">
-            <span className="text-trace">02. SCALE</span>
-            <h4 className="font-bold text-paper">Depth Anything V2</h4>
-            <p className="text-[11px] text-slate">Pixel-vote alignment for metric metres</p>
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/10 space-y-2">
-            <span className="text-trace">03. OBJECTS</span>
-            <h4 className="font-bold text-paper">OWLv2</h4>
-            <p className="text-[11px] text-slate">Open-vocabulary 3D coordinate lifting</p>
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/10 space-y-2">
-            <span className="text-trace">04. MENTAL MAP</span>
-            <h4 className="font-bold text-paper">Hydra Graph</h4>
-            <p className="text-[11px] text-slate">Compact spatial place-and-object graph</p>
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/10 space-y-2">
-            <span className="text-trace">05. COVERAGE</span>
-            <h4 className="font-bold text-paper">Frontier Grid</h4>
-            <p className="text-[11px] text-slate">Wall gaps & unexplored frontier bounds</p>
-          </div>
-        </div>
-
-        <div className="p-6 rounded-xl bg-void border border-white/10 max-w-3xl">
-          <h4 className="text-sm font-semibold text-paper mb-2">Grounding & Language Model Integration</h4>
-          <p className="text-xs text-slate leading-relaxed">
-            Google Gemini is integrated strictly for reasoning over grounded spatial evidence (3D coordinates, bounding boxes, object crops, and camera position history). The language model explains physical evidence — it is not responsible for hallucinating geometry.
-          </p>
-        </div>
+      <section className="page-container inspection-feature">
+        <div className="inspection-copy"><span className="eyebrow">03 / MEET SANJAYA INSPECTION</span><h2>The same space.<br /><span className="text-soft">A different story.</span></h2><p>Walk through a space today. Come back tomorrow. Use a baseline and a repeat scan to explore what has changed—and the evidence behind it.</p><ol>{['Capture a baseline', 'Return and rescan', 'Review the changes'].map((step, i) => <li key={step}><span>0{i + 1}</span>{step}</li>)}</ol><div className="inspection-actions"><Link to="/inspect" className="button-primary">Try an inspection <Arrow /></Link><Link to="/inspection" className="text-link">How it works <Arrow diagonal /></Link></div></div>
+        <div className="comparison-preview" aria-label="Illustrative comparison between a baseline and repeat scan"><div className="comparison-topline"><span>SPATIAL MEMORY</span><span>Illustrative example</span></div><div className="comparison-frames">{['Baseline', 'Repeat scan'].map((label, i) => <div className="comparison-frame" key={label}><span>{label}</span><div className="room-sketch"><i /><i /><i className={i ? 'object-moved' : ''} /></div><small>{i ? 'A change to review' : 'A reference to return to'}</small></div>)}</div><div className="comparison-evidence"><span className="evidence-symbol" aria-hidden="true">↔</span><div><strong>Every change needs context.</strong><p>What changed. Where it happened. How certain we are.</p></div></div></div>
       </section>
 
-      {/* SECTION 5 — SANJAYA INSPECTION */}
-      <section className="landing-section page-container py-24 border-t border-white/10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <span className="eyebrow text-trace font-mono text-xs uppercase tracking-widest block">FIRST APPLICATION</span>
-            <h2 className="text-3xl md:text-5xl font-bold leading-tight">Remember an environment.<br />Detect what changed.</h2>
-            <p className="text-slate text-sm leading-relaxed">
-              Sanjaya Inspection enables non-expert operators to walk a physical space with an ordinary smartphone, record a baseline map, and later rescan the same site to pinpoint missing equipment, structural hazards, or unauthorized modifications.
-            </p>
-
-            <div className="space-y-3 font-mono text-xs text-slate">
-              <div className="flex items-center gap-3">
-                <span className="w-5 h-5 rounded-full bg-trace/20 text-trace flex items-center justify-center font-bold">1</span>
-                <span>Scan environment → Build 3D spatial baseline</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-5 h-5 rounded-full bg-trace/20 text-trace flex items-center justify-center font-bold">2</span>
-                <span>Rescan later → Automatic 3D coordinate alignment</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-5 h-5 rounded-full bg-trace/20 text-trace flex items-center justify-center font-bold">3</span>
-                <span>Detect changes → Spatial evidence & AI grounded report</span>
-              </div>
-            </div>
-
-            <div className="pt-4 flex gap-4">
-              <Link to="/inspect" className="button-primary text-xs">
-                Start Inspection <Arrow />
-              </Link>
-              <Link to="/inspection" className="button-secondary text-xs">
-                Product Specs <Arrow diagonal />
-              </Link>
-            </div>
-          </div>
-
-          <div className="rounded-xl overflow-hidden border border-white/10 bg-graphite p-2 shadow-2xl">
-            <SpatialPreview />
-          </div>
-        </div>
+      <section className="landing-section page-container">
+        <div className="section-heading"><div><span className="eyebrow">04 / BUILT IN THE OPEN</span><h2>A clear view of<br />where we are.</h2></div><p>An evolving research prototype, with a distinction between the current engine, work in progress, and what comes next.</p></div>
+        <div className="status-grid">{capabilities.map(item => <article className="status-card" key={item.title}><StatusBadge status={item.status} /><h3>{item.title}</h3><p>{item.description}</p><ul>{item.items.map(text => <li key={text}><span aria-hidden="true">↗</span>{text}</li>)}</ul></article>)}</div>
       </section>
 
-      {/* SECTION 6 — THE FIVE QUESTIONS (FULL-WIDTH TYPOGRAPHY) */}
-      <section className="py-24 bg-graphite border-y border-white/10 text-center px-6">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <span className="font-mono text-xs uppercase tracking-widest text-trace">GROUNDED EVIDENTIAL FRAMEWORK</span>
-          <h2 className="text-3xl md:text-6xl font-black font-mono tracking-tight text-paper uppercase leading-tight">
-            WHAT CHANGED?<br />
-            WHERE?<br />
-            HOW MUCH?<br />
-            WHEN?<br />
-            HOW CERTAIN ARE WE?
-          </h2>
-          <p className="text-slate text-sm max-w-xl mx-auto pt-4 border-t border-white/10">
-            Sanjaya is engineered to preserve the physical evidence behind every answer, maintaining exact spatial metrics and confidence bounds.
-          </p>
-        </div>
-      </section>
+      <section className="landing-section page-container use-case-section"><div><span className="eyebrow">05 / FOR THE PHYSICAL WORLD</span><h2>Better understanding.<br />Real possibilities.</h2><p>Exploring how spatial memory can help people and machines navigate a changing world.</p><Link to="/impact" className="text-link">Explore the applications <Arrow diagonal /></Link></div><div className="use-case-list">{[['Infrastructure inspection', 'Return to a site with a reference of how it was.'], ['Disaster response & recovery', 'Build context in unfamiliar environments.'], ['Robotics & exploration', 'Give autonomous systems a map to reason over.']].map(([title, body], i) => <div key={title}><span>0{i + 1}</span><div><h3>{title}</h3><p>{body}</p></div><Arrow diagonal /></div>)}</div></section>
 
-      {/* SECTION 7 — PLATFORM DIRECTION */}
-      <section className="landing-section page-container py-24">
-        <div className="section-heading mb-12">
-          <span className="eyebrow text-trace font-mono text-xs uppercase tracking-widest block mb-2">PLATFORM DIRECTION</span>
-          <h2 className="text-3xl md:text-4xl font-bold">One world model. Many sources.</h2>
-          <p className="text-slate text-sm mt-2">Feed observations into a unified, persistent spatial intelligence layer.</p>
-        </div>
+      <section className="page-container"><div className="developer-invite"><div><span className="eyebrow">OPEN QUESTIONS. OPEN SOURCE.</span><h2>Bring your perspective.</h2><p>A model, a dataset, a use case, or a hard question.<br />Help shape the next layer of spatial intelligence.</p></div><div><Link to="/developers" className="button-primary">Build with Sanjaya <Arrow /></Link><a href={siteConfig.githubUrl} target="_blank" rel="noreferrer" className="text-link">Explore the source <Arrow diagonal /></a></div></div></section>
 
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 font-mono text-xs mb-12">
-          <div className="p-4 rounded bg-graphite border border-white/10 text-center space-y-2">
-            <div className="text-paper font-bold">Browser Camera</div>
-            <StatusBadge status="AVAILABLE" label="Current" />
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/10 text-center space-y-2">
-            <div className="text-paper font-bold">Video File</div>
-            <StatusBadge status="AVAILABLE" label="Current" />
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/10 text-center space-y-2">
-            <div className="text-paper font-bold">RTSP Stream</div>
-            <StatusBadge status="PLANNED" />
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/10 text-center space-y-2">
-            <div className="text-paper font-bold">Drone (MAVSDK)</div>
-            <StatusBadge status="PLANNED" />
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/10 text-center space-y-2">
-            <div className="text-paper font-bold">Robot (ROS2)</div>
-            <StatusBadge status="PLANNED" />
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/10 text-center space-y-2">
-            <div className="text-paper font-bold">IoT Sensors</div>
-            <StatusBadge status="PLANNED" />
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 8 — IMPACT */}
-      <section className="landing-section page-container py-24 border-t border-white/10 bg-graphite/20">
-        <div className="section-heading mb-12">
-          <span className="eyebrow text-trace font-mono text-xs uppercase tracking-widest block mb-2">PHYSICAL IMPACT</span>
-          <h2 className="text-3xl md:text-4xl font-bold">Spatial intelligence for environments that matter.</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-6 rounded-xl bg-graphite border border-white/10 space-y-3">
-            <h3 className="font-semibold text-paper text-base">Infrastructure Inspection</h3>
-            <p className="text-xs text-slate leading-relaxed">
-              Track structural anomalies, equipment degradation, and maintenance compliance across tunnels, bridges, and industrial sites over time.
-            </p>
-          </div>
-          <div className="p-6 rounded-xl bg-graphite border border-white/10 space-y-3">
-            <h3 className="font-semibold text-paper text-base">Disaster Response & Recovery</h3>
-            <p className="text-xs text-slate leading-relaxed">
-              Provide search-and-rescue units with immediate 3D hazard maps and unexplored void bounds inside collapsed or unmapped buildings.
-            </p>
-          </div>
-          <div className="p-6 rounded-xl bg-graphite border border-white/10 space-y-3">
-            <h3 className="font-semibold text-paper text-base">Robotics Navigation</h3>
-            <p className="text-xs text-slate leading-relaxed">
-              Equip autonomous ground vehicles and drones with low-latency spatial graphs and place topological maps for waypoint planning.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 9 — ROADMAP */}
-      <section className="landing-section page-container py-24 border-t border-white/10">
-        <div className="section-heading mb-12">
-          <span className="eyebrow text-trace font-mono text-xs uppercase tracking-widest block mb-2">DEVELOPMENT ROADMAP</span>
-          <h2 className="text-3xl md:text-4xl font-bold">Phased research execution.</h2>
-        </div>
-
-        <div className="space-y-6 font-mono text-xs max-w-4xl">
-          <div className="p-4 rounded-lg bg-graphite border-l-4 border-trace flex flex-col md:flex-row justify-between md:items-center gap-2">
-            <div>
-              <span className="font-bold text-paper">01 — MONOCULAR PERCEPTION ENGINE</span>
-              <p className="text-slate text-[11px] mt-1">Video to 3D reconstruction, metric scaling, OWLv2 object lifting, mental graph.</p>
-            </div>
-            <StatusBadge status="AVAILABLE" label="Complete" />
-          </div>
-          <div className="p-4 rounded-lg bg-graphite border-l-4 border-amber-400 flex flex-col md:flex-row justify-between md:items-center gap-2">
-            <div>
-              <span className="font-bold text-paper">02 — INSPECTION INTELLIGENCE</span>
-              <p className="text-slate text-[11px] mt-1">Multi-visit re-scan alignment, 3D change detection, evidence grounded reports.</p>
-            </div>
-            <StatusBadge status="BUILDING" />
-          </div>
-          <div className="p-4 rounded-lg bg-graphite border-l-4 border-slate-500 flex flex-col md:flex-row justify-between md:items-center gap-2">
-            <div>
-              <span className="font-bold text-paper">03 — PERSISTENT WORLD MODELS</span>
-              <p className="text-slate text-[11px] mt-1">Longitudinal spatial memory, state graph evolution, multi-agent updates.</p>
-            </div>
-            <StatusBadge status="PLANNED" />
-          </div>
-          <div className="p-4 rounded-lg bg-graphite border-l-4 border-slate-500 flex flex-col md:flex-row justify-between md:items-center gap-2">
-            <div>
-              <span className="font-bold text-paper">04 — SANJAYA SDK & ADAPTERS</span>
-              <p className="text-slate text-[11px] mt-1">Developer SDK, RTSP streaming ingestion, ROS2 and MAVSDK integrations.</p>
-            </div>
-            <StatusBadge status="PLANNED" />
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 10 — RESEARCH */}
-      <section className="landing-section page-container py-24 border-t border-white/10 bg-graphite/20">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-          <div>
-            <span className="eyebrow text-trace font-mono text-xs uppercase tracking-widest block mb-2">RESEARCH PROGRAM</span>
-            <h2 className="text-3xl md:text-4xl font-bold">Building machines that remember space.</h2>
-          </div>
-          <Link to="/research" className="button-secondary text-xs">
-            Explore Research Program <Arrow diagonal />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-mono">
-          <div className="p-4 rounded bg-graphite border border-white/5">
-            <span className="text-slate block mb-1">AREA 01</span>
-            <span className="text-paper font-bold">Spatial Perception</span>
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/5">
-            <span className="text-slate block mb-1">AREA 02</span>
-            <span className="text-paper font-bold">Persistent World Models</span>
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/5">
-            <span className="text-slate block mb-1">AREA 03</span>
-            <span className="text-paper font-bold">3D Change Detection</span>
-          </div>
-          <div className="p-4 rounded bg-graphite border border-white/5">
-            <span className="text-slate block mb-1">AREA 04</span>
-            <span className="text-paper font-bold">Spatial Uncertainty</span>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 11 & 12 — FINAL CTA */}
-      <section className="py-24 page-container text-center border-t border-white/10">
-        <div className="max-w-2xl mx-auto space-y-6">
-          <span className="eyebrow text-trace font-mono text-xs uppercase tracking-widest">JOIN SANJAYA</span>
-          <h2 className="text-3xl md:text-5xl font-bold">Build a memory of the physical world.</h2>
-          <p className="text-slate text-sm">
-            Open research and spatial engineering for physical-world intelligence.
-          </p>
-          <div className="flex justify-center gap-4 pt-4">
-            <Link to="/inspect" className="button-primary">
-              Start Inspection <Arrow />
-            </Link>
-            <Link to="/join" className="button-secondary">
-              Join Sanjaya <Arrow diagonal />
-            </Link>
-          </div>
-        </div>
-      </section>
+      <section className="landing-section page-container faq-section"><div><span className="eyebrow">A FEW THINGS TO KNOW</span><h2>Good questions.<br />Open answers.</h2><Link to="/docs" className="text-link">Read the documentation <Arrow diagonal /></Link></div><Faq items={questions} /></section>
+      <section className="closing-section page-container"><span className="eyebrow">CHANGE YOUR PERSPECTIVE</span><h2>Give your world<br />a little memory.</h2><Link to="/inspect" className="button-primary">Start exploring <Arrow /></Link></section>
     </div>
   );
 }
