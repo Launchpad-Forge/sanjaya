@@ -1,72 +1,27 @@
-import axios from 'axios';
+// Inspection API (server/src/routes/missions.js + inspections.js).
+// Errors are thrown, never replaced with sample data: a failed scan must look failed.
+const API = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
-export async function uploadScan(fileOrBlob, options = {}) {
-  const formData = new FormData();
-  formData.append('file', fileOrBlob);
-  if (options.scene) formData.append('scene', options.scene);
-  if (options.label) formData.append('label', options.label);
-
-  try {
-    const res = await axios.post(`${API_BASE}/missions/upload`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return res.data;
-  } catch (err) {
-    // Fallback mock response for offline / guest demo mode
-    return {
-      id: `m_${Date.now()}`,
-      status: 'ready',
-      created_at: new Date().toISOString(),
-      urls: { scene: '/sample.glb' },
-      stats: { objects: 4, frames: 48, metric: true }
-    };
-  }
+async function call(path, options) {
+  const res = await fetch(`${API}${path}`, options);
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.error || `Request failed (${res.status})`);
+  return body;
 }
 
-export async function getMission(id) {
-  if (!id) return null;
-  try {
-    const res = await axios.get(`${API_BASE}/missions/${id}`);
-    return res.data;
-  } catch (err) {
-    return {
-      id,
-      status: 'ready',
-      created_at: new Date().toISOString(),
-      urls: { scene: '/sample.glb' },
-      stats: { objects: 4, frames: 48, metric: true, scale: { spread: '0.02' } }
-    };
-  }
-}
+/** Upload a recorded scan. Returns { id, status: "processing" }. */
+export const uploadScan = (video, { scene = 'Indoor', label } = {}) => {
+  const q = new URLSearchParams({ scene, ...(label ? { label } : {}) });
+  return call(`/missions?${q}`, { method: 'POST', headers: { 'Content-Type': video.type.split(';')[0] || 'video/webm' }, body: video });
+};
 
-export async function createInspection(baselineId, rescanId, markerCm = 0) {
-  try {
-    const res = await axios.post(`${API_BASE}/inspections`, { baselineId, rescanId, markerCm });
-    return res.data;
-  } catch (err) {
-    return {
-      id: `ins_${Date.now()}`,
-      baselineId,
-      rescanId,
-      status: 'complete'
-    };
-  }
-}
+export const getMission = (id) => call(`/missions/${id}`);
 
-export async function getInspection(id) {
-  if (!id) return null;
-  try {
-    const res = await axios.get(`${API_BASE}/inspections/${id}`);
-    return res.data;
-  } catch (err) {
-    return {
-      id,
-      status: 'complete',
-      changes: [
-        { label: 'Fire Extinguisher', status: 'MOVED', confidence: 0.94 }
-      ]
-    };
-  }
-}
+export const createInspection = (baselineId, currentId, markerSizeCm = 0) =>
+  call('/inspections', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ baselineId, currentId, markerSizeCm }),
+  });
+
+export const getInspection = (id) => call(`/inspections/${id}`);
+export const explainInspection = (id) => call(`/inspections/${id}/explain`, { method: 'POST' });

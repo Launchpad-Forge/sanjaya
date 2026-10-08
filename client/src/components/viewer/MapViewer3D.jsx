@@ -1,36 +1,74 @@
-import React from 'react';
+// Baseline scene.glb + change markers. Positions are in the baseline's Sanjaya frame
+// (Y up, metres), which is also glTF's convention, so markers need no conversion.
+import { Suspense, useEffect } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { Bounds, Html, Line, OrbitControls, useGLTF } from '@react-three/drei';
 
-export default function MapViewer3D({ url, height = '400px' }) {
+export const SEVERITY_COLOR = { high: '#FF5A5F', medium: '#F5A524', low: '#A1A1A6' };
+
+function Scene({ url }) {
+  const { scene } = useGLTF(url);
+  useEffect(() => {
+    scene.traverse((o) => {
+      if (o.isPoints) Object.assign(o.material, { size: 0.025, sizeAttenuation: true });
+    });
+  }, [scene]);
+  return <primitive object={scene} />;
+}
+
+function Marker({ change, selected, onSelect }) {
+  const color = SEVERITY_COLOR[change.severity];
+  const pos = change.current_position ?? change.baseline_position;
+  const r = selected ? 0.13 : 0.08;
+  const pick = (e) => { e.stopPropagation(); onSelect?.(change.id); };
+  const region = change.region;
   return (
-    <div 
-      className="w-full rounded-xl bg-black border border-white/10 relative overflow-hidden flex flex-col items-center justify-center p-6 text-center"
-      style={{ minHeight: height }}
-    >
-      <div className="absolute inset-0 bg-gradient-to-b from-trace/5 via-transparent to-transparent pointer-events-none" />
-      
-      {/* Visual Spatial Viewer Grid / Mock Mesh */}
-      <div className="w-24 h-24 rounded-full border border-trace/30 flex items-center justify-center mb-4 relative animate-pulse">
-        <div className="w-16 h-16 rounded-full border border-trace/60 flex items-center justify-center">
-          <div className="w-3 h-3 rounded-full bg-trace" />
-        </div>
-        <span className="absolute top-0 text-[10px] font-mono text-trace font-bold uppercase tracking-widest bg-void px-2 py-0.5 rounded border border-trace/20">
-          3D MODEL
-        </span>
-      </div>
+    <group>
+      {change.baseline_position && change.current_position && (
+        <>
+          <Line points={[change.baseline_position, change.current_position]} color={color} lineWidth={selected ? 3 : 1.5} dashed dashSize={0.06} gapSize={0.04} />
+          <mesh position={change.baseline_position} onClick={pick}>
+            <sphereGeometry args={[r * 0.7, 16, 12]} />
+            <meshBasicMaterial color={color} wireframe />
+          </mesh>
+        </>
+      )}
+      {region && (
+        <mesh position={region.bbox_min.map((v, i) => (v + region.bbox_max[i]) / 2)} onClick={pick}>
+          <boxGeometry args={region.bbox_max.map((v, i) => v - region.bbox_min[i])} />
+          <meshBasicMaterial color={color} wireframe />
+        </mesh>
+      )}
+      <mesh position={pos} onClick={pick}>
+        <sphereGeometry args={[r, 24, 16]} />
+        <meshBasicMaterial color={color} transparent opacity={selected ? 1 : 0.8} />
+      </mesh>
+      {selected && (
+        <Html position={pos} center style={{ pointerEvents: 'none' }}>
+          <div className="mt-10 whitespace-nowrap rounded-full bg-black/80 px-3 py-1 text-xs text-paper border border-white/20">
+            {change.label ?? 'geometry'} · {change.type.replace(/_/g, ' ')}
+          </div>
+        </Html>
+      )}
+    </group>
+  );
+}
 
-      <h4 className="text-sm font-bold font-mono text-paper mb-1">
-        3D Spatial Scene Cloud
-      </h4>
-      
-      <p className="text-xs font-mono text-slate max-w-sm mb-4">
-        {url ? `Loaded source: ${url}` : 'Origin = first camera position, +Y up, -Z initial forward (metres)'}
-      </p>
-
-      <div className="flex items-center gap-4 text-xs font-mono text-slate border-t border-white/10 pt-4">
-        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400" /> Metric Scale: ON</span>
-        <span>•</span>
-        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-trace" /> Coordinate Frame: glTF</span>
-      </div>
+export default function MapViewer3D({ url, changes = [], selectedId, onSelect, className = 'h-[480px]' }) {
+  return (
+    <div className={`relative overflow-hidden rounded-2xl border border-graphite bg-black ${className}`}>
+      <Canvas camera={{ position: [0, 3, 3], fov: 55 }} onPointerMissed={() => onSelect?.(null)}>
+        <Suspense fallback={<Html center><span className="text-sm text-slate">Loading 3D map…</span></Html>}>
+          {url && (
+            <Bounds fit clip margin={1.1}>
+              <Scene url={url} />
+            </Bounds>
+          )}
+        </Suspense>
+        {changes.map((c) => <Marker key={c.id} change={c} selected={c.id === selectedId} onSelect={onSelect} />)}
+        <OrbitControls makeDefault />
+      </Canvas>
+      {!url && <p className="absolute inset-0 grid place-items-center text-sm text-slate">No 3D map yet</p>}
     </div>
   );
 }

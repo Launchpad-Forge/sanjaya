@@ -24,6 +24,8 @@ import NotFound from './pages/public/NotFound';
 
 // Inspect Experience
 import Inspect from './pages/inspect/Inspect';
+import InspectionResult from './pages/inspect/Inspection';
+import InspectionReport from './pages/inspect/Report';
 
 // App Workspace Pages
 import Dashboard from './pages/app/Dashboard';
@@ -62,6 +64,8 @@ export default function AppRoutes() {
 
       {/* Inspection Experience (Guest or Authenticated) */}
       <Route path="/inspect" element={<Inspect />} />
+      <Route path="/inspection/:id" element={<InspectionResult />} />
+      <Route path="/reports/:id" element={<InspectionReport />} />
       <Route path="/try" element={<Navigate to="/inspect" replace />} />
       <Route path="/live/new" element={<Navigate to="/inspect" replace />} />
 
