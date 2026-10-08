@@ -42,11 +42,16 @@ def sample_video(video_path: str, fps: float = 6, max_frames: int = 80,
     cap = cv2.VideoCapture(video_path)
     src_fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
     total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
-    if total <= 0:
+    if total <= 0 or not 1.0 <= src_fps <= 240.0:
+        # Browser MediaRecorder WebM has no frame count and reports a 1000 fps timebase:
+        # count the frames and measure the real duration from their timestamps instead.
+        total, last_ms = 0, 0.0
         while cap.grab():
             total += 1
+            last_ms = cap.get(cv2.CAP_PROP_POS_MSEC)
         cap.release()
         cap = cv2.VideoCapture(video_path)
+        src_fps = (total - 1) / (last_ms / 1000.0) if total > 1 and last_ms > 0 else 30.0
     total = max(total, 1)
 
     n_at_fps = max(2, int(round(total * float(fps) / max(1.0, src_fps))))

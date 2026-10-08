@@ -23,6 +23,7 @@ from sanjaya import engine as E
 from sanjaya import export as X
 from sanjaya import frames as F
 from sanjaya import geometry as G
+from sanjaya import inspection as INS
 from sanjaya.objects import DEFAULT_QUERIES, parse_queries
 
 # -----------------------------------------------------------------------------
@@ -130,6 +131,27 @@ def map_space(image_files, video_file, scene, things, fps, max_frames, keyframes
     status = E.status_markdown(res["stats"], source)
     return (res["glb"], res["plan"], res["mental_map_img"], res["gallery"], status,
             res["bundle"], res["state"], res["stats"])
+
+
+def compare_scans(baseline_zip, current_zip, marker_size_cm):
+    """Two mission bundles -> inspection result (CPU only, no GPU reservation)."""
+    if not baseline_zip or not current_zip:
+        raise gr.Error("Add the baseline and the current mission bundles (.zip).")
+    path = lambda f: f if isinstance(f, str) else getattr(f, "name", None) or getattr(f, "path", None)
+    marker = float(marker_size_cm) / 100.0 if marker_size_cm else None
+    res = INS.compare(path(baseline_zip), path(current_zip), marker_size=marker)
+    lines = [f"**{res['summary']['changes']} change(s)** · {res['summary']['high']} high priority · "
+             f"{res['summary']['unverified']} unverified · status `{res['status']}`"]
+    if res["alignment"] and res["status"] == "ok":
+        a = res["alignment"]
+        lines.append(f"Alignment {a['method']}: fitness {a['fitness']}, residual {a['rmse']} {res['unit']}")
+    for c in res["changes"]:
+        what = c["label"] or "geometry"
+        how = f", {c['displacement_m']} {res['unit']}" if c["displacement_m"] is not None else ""
+        lines.append(f"- [{c['severity']}] {c['type'].replace('_', ' ')}: {what}{how} "
+                     f"(confidence {c['confidence']})")
+    lines += [f"- note: {w}" for w in res["warnings"]]
+    return res, "\n".join(lines)
 
 
 def rerender(state, conf_pct, show_path, show_objects):
@@ -314,6 +336,20 @@ def build_demo():
                     demo.load(show_sample, pick, outs, show_api=False)
                 else:
                     gr.Markdown("Sample missions will appear here soon.")
+
+            with gr.Tab("Inspect (beta)"):
+                gr.Markdown("Compare two mission bundles of the same place: a **baseline** and a **rescan**. "
+                            "Start both scans from the same spot, facing the same way (or with the same "
+                            "ArUco marker, DICT_4X4_50, in view at the start).")
+                with gr.Row():
+                    base_zip = gr.File(label="Baseline mission bundle (.zip)", file_types=[".zip"])
+                    cur_zip = gr.File(label="Current mission bundle (.zip)", file_types=[".zip"])
+                marker_cm = gr.Number(value=0, label="Marker side length in cm (0 = no marker)")
+                compare_btn = gr.Button("Compare", variant="primary")
+                compare_md = gr.Markdown()
+                compare_json = gr.JSON(label="Inspection result")
+                compare_btn.click(compare_scans, [base_zip, cur_zip, marker_cm], [compare_json, compare_md],
+                                  api_name="compare")
 
             with gr.Tab("How it works"):
                 gr.Markdown(HOW)
