@@ -14,7 +14,22 @@ from typing import List, Optional, Sequence
 import numpy as np
 import torch
 
-IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".webp")
+IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".webp", ".heic", ".heif")
+
+try:  # iPhone photos (HEIC) - optional, needs pillow-heif
+    import pillow_heif
+    pillow_heif.register_heif_opener()
+except Exception:  # noqa: BLE001
+    pass
+
+
+def spread(paths: Sequence[str], n: int) -> List[str]:
+    """Keep at most n items, spread evenly from first to last (never just the first n)."""
+    paths = list(paths)
+    if len(paths) <= n:
+        return paths
+    idx = sorted({int(round(x)) for x in np.linspace(0, len(paths) - 1, n)})
+    return [paths[i] for i in idx]
 
 
 def sample_video(video_path: str, fps: float = 6, max_frames: int = 80,
@@ -52,16 +67,35 @@ def sample_video(video_path: str, fps: float = 6, max_frames: int = 80,
     return saved
 
 
+def _is_image(path: str) -> bool:
+    if path.lower().endswith(IMAGE_EXTS):
+        return True
+    try:  # API uploads can arrive without a name or extension (e.g. ".../blob")
+        from PIL import Image
+        with Image.open(path) as im:
+            im.verify()
+        return True
+    except Exception:  # noqa: BLE001
+        return False
+
+
 def list_images(files: Optional[Sequence]) -> List[str]:
-    """Gradio upload (paths or file objects) -> image paths sorted by file name."""
+    """Gradio upload (paths or file objects) -> ordered image paths.
+
+    If every file has a distinct image file name (000.jpg, 001.jpg, ...), frames are
+    sorted by name. Otherwise (API uploads often arrive as nameless "blob" files) the
+    upload order is kept, so callers must send frames in walking order."""
     if not files:
         return []
     paths = []
     for f in files:
         p = f if isinstance(f, str) else getattr(f, "name", None) or getattr(f, "path", None)
-        if p and p.lower().endswith(IMAGE_EXTS):
+        if p and os.path.isfile(p) and _is_image(p):
             paths.append(p)
-    return sorted(paths, key=lambda p: os.path.basename(p))
+    names = [os.path.basename(p) for p in paths]
+    if len(set(names)) == len(names) and all(n.lower().endswith(IMAGE_EXTS) for n in names):
+        paths = sorted(paths, key=lambda p: os.path.basename(p))
+    return paths
 
 
 def preprocess(paths: Sequence[str], image_size: int = 518, patch_size: int = 14) -> torch.Tensor:

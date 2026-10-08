@@ -6,3 +6,4 @@ trimesh
 matplotlib
 scipy
 spaces
+pillow-heif

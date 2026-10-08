@@ -33,7 +33,10 @@ def build_lingbot(ckpt_path: Optional[str], device: str = "cpu", use_sdpa: bool 
         camera_num_iterations=camera_num_iterations,
     )
     if ckpt_path:
-        ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+        try:  # memory-mapped load keeps peak RAM low (Colab free tier has ~12 GB)
+            ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False, mmap=True)
+        except Exception:  # noqa: BLE001  (older checkpoint formats can't be memory-mapped)
+            ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
         state = ckpt.get("model", ckpt)
         missing, unexpected = model.load_state_dict(state, strict=False)
         print(f"[geometry] checkpoint loaded (missing={len(missing)}, unexpected={len(unexpected)})")

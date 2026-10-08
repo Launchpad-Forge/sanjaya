@@ -70,7 +70,9 @@ def gpu_stage(images, scene, queries, num_keyframes):
     warnings = []
     LINGBOT.to("cuda")
     if not _BF16["done"] and getattr(LINGBOT, "aggregator", None) is not None:
-        LINGBOT.aggregator = LINGBOT.aggregator.to(dtype=torch.bfloat16)
+        # bf16 on Ampere+ (ZeroGPU, A100, L4); fp16 on older GPUs such as Colab's T4
+        low = torch.bfloat16 if torch.cuda.get_device_capability()[0] >= 8 else torch.float16
+        LINGBOT.aggregator = LINGBOT.aggregator.to(dtype=low)
         _BF16["done"] = True
     geo = G.run_lingbot(LINGBOT, images, NUM_SCALE_FRAMES, KEYFRAME_INTERVAL)
     kf = F.pick_keyframes(images.shape[0], num_keyframes)
@@ -111,7 +113,7 @@ def map_space(image_files, video_file, scene, things, fps, max_frames, keyframes
         paths = F.sample_video(video_file, fps=fps, max_frames=max_frames)
         source = f"video, {len(paths)} frames"
     else:
-        paths = F.list_images(image_files)[:max_frames]
+        paths = F.spread(F.list_images(image_files), max_frames)
         source = f"{len(paths)} photos"
     if not paths:
         raise gr.Error("Add a short video or a few photos first.")
@@ -257,8 +259,8 @@ def build_demo():
                 with gr.Row():
                     with gr.Column(scale=4):
                         video_in = gr.Video(label="Video (record or upload)", sources=["upload", "webcam"])
-                        images_in = gr.File(label="…or photos, in order", file_count="multiple",
-                                            file_types=["image"])
+                        images_in = gr.File(label="…or photos, in walking order (000.jpg, 001.jpg, …)",
+                                            file_count="multiple")
                         scene = gr.Radio(["Indoor", "Outdoor"], value="Indoor", label="Scene")
                         things = gr.Textbox(value=", ".join(DEFAULT_QUERIES), lines=3,
                                             label="Things to look for (comma-separated)")
