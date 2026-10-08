@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ShaderBackground from '../../components/site/ShaderBackground';
 import Brand, { Arrow, BrandMark } from '../../components/site/Brand';
+import { supabase } from '../../lib/supabase';
 
 const authSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
@@ -17,6 +18,14 @@ export default function Auth() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const { register, handleSubmit, reset, formState: { errors } } = useForm({ resolver: zodResolver(authSchema) });
+
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin }
+    });
+    if (error) console.error("Google login error:", error.message);
+  };
 
   useEffect(() => {
     reset();
@@ -58,6 +67,11 @@ export default function Auth() {
               {errors.password && <p className="field-error" id="password-error" role="alert">{errors.password.message}</p>}
             </div>
             <button type="submit" className="auth-submit">{isLogin ? 'Sign in' : 'Create account'} <Arrow /></button>
+            
+            <button type="button" className="auth-submit" onClick={handleGoogleLogin} style={{ marginTop: '0.75rem', backgroundColor: '#fff', color: '#111', border: '1px solid #e5e7eb' }}>
+              Continue with Google
+            </button>
+
             {submitted && <p className="auth-notice" role="status">Account access isn’t connected yet in this research prototype. <Link to="/try">Explore the guest demo</Link> in the meantime.</p>}
           </form>
           <p className="auth-switch">{isLogin ? 'New to Sanjaya?' : 'Already have an account?'} <Link to={isLogin ? '/register' : '/login'}>{isLogin ? 'Create an account' : 'Sign in'} <span aria-hidden="true">↗</span></Link></p>

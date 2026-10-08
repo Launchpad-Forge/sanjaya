@@ -13,6 +13,7 @@
     "@hookform/resolvers": "^5.9.1",
     "@react-three/drei": "^9.89.0",
     "@react-three/fiber": "^8.15.0",
+    "@supabase/supabase-js": "^2.117.3",
     "axios": "^1.6.0",
     "framer-motion": "^14.0.0",
     "geist": "^1.7.2",
