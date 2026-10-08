@@ -20,6 +20,10 @@ app.use('/api/capture-sessions', captureSessions);
 app.use('/api/inspections', inspections);
 app.use(errorHandler);
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+// Start server if run directly (not imported in tests or Vercel serverless)
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   app.listen(env.PORT, () => console.log(`Server running on port ${env.PORT}`));
 }
+
+// Export default for Vercel serverless deployment
+export default app;
